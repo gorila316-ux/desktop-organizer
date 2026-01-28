@@ -1,13 +1,14 @@
+#!/usr/bin/env python3
 import sys
 import shutil
 from collections import defaultdict
 from pathlib import Path
-
+# Ensure UTF-8 encoding for standard input and output
 sys.stdout.reconfigure(encoding="utf-8")
 sys.stdin.reconfigure(encoding="utf-8")
-
+# Define the desktop path
 DESKTOP_PATH = Path.home() / "Desktop"
-
+# Define file categories and their associated extensions
 CATEGORY_MAP = {
     "이미지": {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".ico", ".webp", ".tiff"},
     "문서": {".pdf", ".doc", ".docx", ".txt", ".rtf", ".odt", ".xls", ".xlsx", ".ppt", ".pptx", ".csv", ".hwp"},
@@ -18,15 +19,15 @@ CATEGORY_MAP = {
     "코드": {".py", ".js", ".ts", ".html", ".css", ".java", ".c", ".cpp", ".h", ".json", ".xml", ".yaml", ".yml"},
     "CAD": {".dwg", ".dxf", ".nwc", ".nwd", ".nwf", ".rvt", ".rfa", ".ifc", ".bak", ".sdf", ".dgn"},
 }
-
+# Files to skip during organization
 SKIP_FILES = {"desktop.ini", "thumbs.db"}
-
+# Create a reverse mapping from extension to category
 EXT_TO_CATEGORY = {}
 for category, extensions in CATEGORY_MAP.items():
     for ext in extensions:
         EXT_TO_CATEGORY[ext] = category
 
-
+# Function to scan the desktop and group files by category
 def scan_desktop():
     grouped = defaultdict(list)
 
@@ -44,13 +45,13 @@ def scan_desktop():
 
     return grouped
 
-
+# Function to preview the files to be moved
 def preview(grouped):
     total = sum(len(files) for files in grouped.values())
     print(f"\n바탕화면: {DESKTOP_PATH}")
     print(f"이동 대상: {total}개 파일")
     print("=" * 55)
-
+# Display grouped files
     for category in sorted(grouped):
         files = grouped[category]
         dest = DESKTOP_PATH / category
@@ -61,11 +62,11 @@ def preview(grouped):
 
     print()
 
-
+# Function to move files to their respective category folders
 def move_files(grouped):
     moved = 0
     skipped = 0
-
+# Move files to their respective category directories
     for category, files in grouped.items():
         dest_dir = DESKTOP_PATH / category
         dest_dir.mkdir(exist_ok=True)
@@ -83,7 +84,7 @@ def move_files(grouped):
 
     print(f"\n완료: {moved}개 이동, {skipped}개 건너뜀")
 
-
+# Main function to orchestrate the organization process
 def main():
     if not DESKTOP_PATH.exists():
         print(f"바탕화면 경로를 찾을 수 없습니다: {DESKTOP_PATH}")
@@ -104,6 +105,6 @@ def main():
     else:
         print("취소되었습니다.")
 
-
+# Run the main function
 if __name__ == "__main__":
     main()
