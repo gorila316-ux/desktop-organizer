@@ -2,11 +2,11 @@ import os
 import sys
 from collections import defaultdict
 from pathlib import Path
-
+# Ensure UTF-8 encoding for standard input and output
 sys.stdout.reconfigure(encoding="utf-8")
-
+# Ensure UTF-8 encoding for standard input and output
 DESKTOP_PATH = Path.home() / "Desktop"
-
+# Define file categories and their associated extensions
 CATEGORY_MAP = {
     "images": {".jpg", ".jpeg", ".png", ".gif", ".bmp", ".svg", ".ico", ".webp", ".tiff"},
     "documents": {".pdf", ".doc", ".docx", ".txt", ".rtf", ".odt", ".xls", ".xlsx", ".ppt", ".pptx", ".csv", ".hwp"},
