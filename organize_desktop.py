@@ -2,6 +2,7 @@
 import sys
 import shutil
 from collections import defaultdict
+from datetime import datetime
 from pathlib import Path
 # Ensure UTF-8 encoding for standard input and output
 sys.stdout.reconfigure(encoding="utf-8")
@@ -62,8 +63,26 @@ def preview(grouped):
 
     print()
 
+# Function to create backup of files before organizing
+def create_backup(grouped):
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    backup_dir = DESKTOP_PATH / f"_backup_{timestamp}"
+    backup_dir.mkdir(exist_ok=True)
+
+    backed_up = 0
+    for files in grouped.values():
+        for f in files:
+            dest = backup_dir / f.name
+            shutil.copy2(str(f), str(dest))
+            backed_up += 1
+
+    print(f"📁 백업 완료: {backup_dir}")
+    print(f"   {backed_up}개 파일 백업됨\n")
+    return backup_dir
+
+
 # Function to move files to their respective category folders
-def move_files(grouped):
+def move_files(grouped, backup_dir=None):
     moved = 0
     skipped = 0
     stats = defaultdict(int)  # 카테고리별 이동 통계
@@ -94,6 +113,8 @@ def move_files(grouped):
         print("-" * 55)
     print(f"  총 이동: {moved}개")
     print(f"  건너뜀: {skipped}개")
+    if backup_dir:
+        print(f"  백업 위치: {backup_dir}")
     print("=" * 55)
 
 # Main function to orchestrate the organization process
@@ -113,7 +134,12 @@ def main():
     answer = input("위 파일들을 이동하시겠습니까? (y/n): ").strip().lower()
     if answer == "y":
         print()
-        move_files(grouped)
+        backup_answer = input("백업을 생성하시겠습니까? (y/n): ").strip().lower()
+        print()
+        backup_dir = None
+        if backup_answer == "y":
+            backup_dir = create_backup(grouped)
+        move_files(grouped, backup_dir)
     else:
         print("취소되었습니다.")
 
