@@ -66,6 +66,7 @@ def preview(grouped):
 def move_files(grouped):
     moved = 0
     skipped = 0
+    stats = defaultdict(int)  # 카테고리별 이동 통계
 # Move files to their respective category directories
     for category, files in grouped.items():
         dest_dir = DESKTOP_PATH / category
@@ -81,8 +82,19 @@ def move_files(grouped):
             shutil.move(str(f), str(dest))
             print(f"  [이동] {f.name} -> {category}/")
             moved += 1
+            stats[category] += 1
 
-    print(f"\n완료: {moved}개 이동, {skipped}개 건너뜀")
+    # 통계 출력
+    print("\n" + "=" * 55)
+    print("📊 정리 통계")
+    print("=" * 55)
+    if stats:
+        for category in sorted(stats.keys()):
+            print(f"  {category}: {stats[category]}개")
+        print("-" * 55)
+    print(f"  총 이동: {moved}개")
+    print(f"  건너뜀: {skipped}개")
+    print("=" * 55)
 
 # Main function to orchestrate the organization process
 def main():
