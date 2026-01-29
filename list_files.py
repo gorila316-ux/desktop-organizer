@@ -25,6 +25,18 @@ for category, extensions in CATEGORY_MAP.items():
         EXT_TO_CATEGORY[ext] = category
 
 
+def format_size(size_bytes):
+    """파일 크기를 보기 좋은 단위로 변환"""
+    if size_bytes < 1024:
+        return f"{size_bytes} B"
+    elif size_bytes < 1024 * 1024:
+        return f"{size_bytes / 1024:.1f} KB"
+    elif size_bytes < 1024 * 1024 * 1024:
+        return f"{size_bytes / (1024 * 1024):.1f} MB"
+    else:
+        return f"{size_bytes / (1024 * 1024 * 1024):.1f} GB"
+
+
 def categorize_files():
     if not DESKTOP_PATH.exists():
         print(f"Desktop path not found: {DESKTOP_PATH}")
@@ -37,23 +49,25 @@ def categorize_files():
             continue
         ext = entry.suffix.lower()
         category = EXT_TO_CATEGORY.get(ext, "etc")
-        grouped[category].append(entry.name)
+        grouped[category].append(entry)
 
     if not grouped:
         print("No files found on the desktop.")
         return
 
     total = sum(len(files) for files in grouped.values())
+    total_size = sum(f.stat().st_size for files in grouped.values() for f in files)
     print(f"Desktop: {DESKTOP_PATH}")
-    print(f"Total files: {total}")
+    print(f"Total files: {total} ({format_size(total_size)})")
     print("=" * 50)
 
     for category in sorted(grouped):
-        files = sorted(grouped[category])
+        files = sorted(grouped[category], key=lambda x: x.name)
         print(f"\n[{category.upper()}] ({len(files)} files)")
-        print("-" * 40)
-        for name in files:
-            print(f"  {name}")
+        print("-" * 50)
+        for f in files:
+            size = format_size(f.stat().st_size)
+            print(f"  {f.name:<35} {size:>10}")
 
     print()
 
