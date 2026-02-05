@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# 백업 기능 추가 예정
 import sys
 import shutil
 from collections import defaultdict
